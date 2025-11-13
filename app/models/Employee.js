@@ -86,7 +86,7 @@ const attributes = {
     }
   },
   updatedAt: {
-    field: 'updated_at',
+    field: 'updated_at', 
     type: DataTypes.DATE, // DataTypes.NOW 쓰면 defaultValue: new Date() 안해도 됌
     allowNull: false,
     comment: '수정일',
