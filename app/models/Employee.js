@@ -130,11 +130,33 @@ const Employee = {
 
     return defineEmployee;
   },
+  // 모델 관계를 정의
+  associate: (db) => {
+    // 1:n 관계에서 부모 모델에 설정하는 방법 (1명의 사원은 복수의 직급 정보를 가진다.)
+    db.Employee.hasMany(db.TitleEmp, { sourceKey: 'empId', foreignKey: 'empId', as: 'titleEmps' });
+  }
 };
 
 export default Employee;
 
 
+
+// --------------------
+// createdAt:에 이런식으로 있어서 게터 필요,오버라이딩으로 재정의 필요함. 
+// 제이슨 파일로 변환될때 utc기준으로 변경될수 있어서 우리나라 시간으로 재정의
+// --------------------
+// class Employee{
+//   deletedAt;
+
+//   getDataValue(name) {
+//     return this.name;
+//   }
+
+//   toJSON() {
+//     if(val=DATE)
+//       // DATE 관련 데이터면 UTC로 변환해서 반환
+//   }
+// }
 
 
 

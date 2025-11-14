@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../app/models/index.js';
 import { Op } from 'sequelize';
 import dayjs from 'dayjs';
-const { sequelize, Employee} = db;
+const { sequelize, Employee, TitleEmp, Title} = db;
 
 const eduRouter = express.Router();
 
@@ -180,13 +180,44 @@ eduRouter.get('/api/edu', async (request, response, next) => {
     // });
 
     // groupby, having
-    result = await Employee.findAll({
-      attributes: [
-        'gender',
-        [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender']
+    // result = await Employee.findAll({
+    //   attributes: [
+    //     'gender',
+    //     [sequelize.fn('COUNT', sequelize.col('*')), 'cnt_gender']
+    //   ],
+    //   group: ['gender'],
+    //   having: sequelize.literal('cnt_gender >= 40000'),
+    // });
+
+    // join
+    result = await Employee.findOne({
+      attributes: ['emp_id', 'name'],
+      where: {
+        empId: 1
+      },
+      include: [
+        {
+          model: TitleEmp, // 내가 연결할 모델
+          as: 'titleEmps', // 내가 사용할 관계
+          required: true, // `true`면 Inner Join, `false`면 Left Outer Join
+          attributes: ['titleCode'],
+          where: {
+            endAt: {
+              [Op.is]: null,
+            }
+          },
+          // separate: true, // lazy loading 방법 (어떻게 쓰는지 챗지피티 물어봐...)
+          include: [
+            {
+              model: Title,
+              as: 'title',
+              // association: 'title', // 위에 두줄 대신 이 한줄로 대체 됨
+              required: true,
+              attributes: ['title'],
+            }
+          ],
+        }
       ],
-      group: ['gender'],
-      having: sequelize.literal('cnt_gender >= 40000'),
     });
 
     return response.status(200).send({
